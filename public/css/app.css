@@ -15533,6 +15533,25 @@ label {
 select[multiple] {
   height: 34px; }
 
+.programm-container h2 {
+  margin: 5px 0px;
+  font-size: 12pt; }
+  .programm-container h2 i {
+    font-size: 10pt;
+    margin-left: 2px; }
+
+.programm-container .fa {
+  font-size: 10pt;
+  cursor: pointer; }
+
+.programm-container .root ul {
+  padding-left: 0; }
+  .programm-container .root ul li {
+    margin-left: 20px;
+    list-style: none; }
+  .root > ul > li {
+    margin-left: 0px !important; }
+
 .list-group-item .search-icon {
   float: right;
   cursor: pointer; }

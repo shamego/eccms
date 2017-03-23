@@ -17,6 +17,8 @@ Route::group(['middleware' => ['login']], function () {
     Route::resource('pages', 'PagesController');
     Route::get('search', 'PagesController@search');
 
+    Route::resource('programms', 'ProgrammsController');
+
     Route::resource('sass', 'SassController');
 
     # Templates for angular directives

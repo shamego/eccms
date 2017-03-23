@@ -187,6 +187,27 @@
 }).call(this);
 
 (function() {
+  angular.module('Egecms').value('Published', [
+    {
+      id: 0,
+      title: 'не опубликовано'
+    }, {
+      id: 1,
+      title: 'опубликовано'
+    }
+  ]).value('UpDown', [
+    {
+      id: 1,
+      title: 'вверху'
+    }, {
+      id: 2,
+      title: 'внизу'
+    }
+  ]);
+
+}).call(this);
+
+(function() {
 
 
 }).call(this);
@@ -333,6 +354,76 @@
 
 (function() {
 
+
+}).call(this);
+
+(function() {
+  angular.module('Egecms').directive('programmItem', function() {
+    return {
+      restrict: 'E',
+      templateUrl: 'directives/programm-item',
+      scope: {
+        item: '=',
+        level: '=?',
+        "delete": '&delete'
+      },
+      controller: function($timeout, $element, $scope) {
+        var resetNewItem;
+        $scope.focusForm = function(type) {
+          return $timeout(function() {
+            return $element.find("input." + type + "-item").last().focus();
+          });
+        };
+        $scope.edit = function() {
+          $scope.is_editing = true;
+          return $scope.focusForm('edit');
+        };
+        $scope.save = function(event) {
+          if ($scope.item.title.length && (event != null ? event.keyCode : void 0) === 13) {
+            $scope.is_editing = false;
+          }
+          if ((event != null ? event.keyCode : void 0) === 27) {
+            return $scope.is_editing = false;
+          }
+        };
+        $scope.addChild = function() {
+          $scope.is_adding = true;
+          return $scope.focusForm('add');
+        };
+        $scope.createChild = function(event) {
+          if ($scope.new_item.title && (event != null ? event.keyCode : void 0) === 13) {
+            if (!$scope.item.content) {
+              $scope.item.content = [];
+            }
+            if ($scope.new_item.title.length) {
+              $scope.item.content.push($scope.new_item);
+              resetNewItem();
+            }
+          }
+          if ((event != null ? event.keyCode : void 0) === 27) {
+            return $scope.is_adding = false;
+          }
+        };
+        $scope.deleteChild = function(child) {
+          return $scope.item.content = _.without($scope.item.content, child);
+        };
+        $scope.focusOut = function() {
+          $scope.is_adding = false;
+          return $scope.is_editing = false;
+        };
+        resetNewItem = function() {
+          return $scope.new_item = {
+            title: '',
+            content: []
+          };
+        };
+        if (!$scope.level) {
+          $scope.level = 1;
+        }
+        return resetNewItem();
+      }
+    };
+  });
 
 }).call(this);
 
@@ -581,6 +672,60 @@
 }).call(this);
 
 (function() {
+  var apiPath, countable, updatable;
+
+  angular.module('Egecms').factory('Variable', function($resource) {
+    return $resource(apiPath('variables'), {
+      id: '@id'
+    }, updatable());
+  }).factory('Sass', function($resource) {
+    return $resource(apiPath('sass'), {
+      id: '@id'
+    }, updatable());
+  }).factory('Page', function($resource) {
+    return $resource(apiPath('pages'), {
+      id: '@id'
+    }, {
+      update: {
+        method: 'PUT'
+      },
+      checkExistance: {
+        method: 'POST',
+        url: apiPath('pages', 'checkExistance')
+      }
+    });
+  }).factory('Programm', function($resource) {
+    return $resource(apiPath('programms'), {
+      id: '@id'
+    }, updatable());
+  });
+
+  apiPath = function(entity, additional) {
+    if (additional == null) {
+      additional = '';
+    }
+    return ("api/" + entity + "/") + (additional ? additional + '/' : '') + ":id";
+  };
+
+  updatable = function() {
+    return {
+      update: {
+        method: 'PUT'
+      }
+    };
+  };
+
+  countable = function() {
+    return {
+      count: {
+        method: 'GET'
+      }
+    };
+  };
+
+}).call(this);
+
+(function() {
   angular.module('Egecms').controller('LoginCtrl', function($scope, $http) {
     angular.element(document).ready(function() {
       return $scope.l = Ladda.create(document.querySelector('#login-submit'));
@@ -717,6 +862,21 @@
 }).call(this);
 
 (function() {
+  angular.module('Egecms').controller('ProgrammsIndex', function($scope, $attrs, IndexService, Programm) {
+    bindArguments($scope, arguments);
+    return angular.element(document).ready(function() {
+      return IndexService.init(Programm, $scope.current_page, $attrs);
+    });
+  }).controller('ProgrammsForm', function($scope, $attrs, $timeout, FormService, Programm) {
+    bindArguments($scope, arguments);
+    return angular.element(document).ready(function() {
+      return FormService.init(Programm, $scope.id, $scope.model);
+    });
+  });
+
+}).call(this);
+
+(function() {
   angular.module('Egecms').controller('SassIndex', function($scope, $attrs, IndexService, Sass) {
     bindArguments($scope, arguments);
     return angular.element(document).ready(function() {
@@ -773,77 +933,6 @@
 
 (function() {
 
-
-}).call(this);
-
-(function() {
-  angular.module('Egecms').value('Published', [
-    {
-      id: 0,
-      title: 'не опубликовано'
-    }, {
-      id: 1,
-      title: 'опубликовано'
-    }
-  ]).value('UpDown', [
-    {
-      id: 1,
-      title: 'вверху'
-    }, {
-      id: 2,
-      title: 'внизу'
-    }
-  ]);
-
-}).call(this);
-
-(function() {
-  var apiPath, countable, updatable;
-
-  angular.module('Egecms').factory('Variable', function($resource) {
-    return $resource(apiPath('variables'), {
-      id: '@id'
-    }, updatable());
-  }).factory('Sass', function($resource) {
-    return $resource(apiPath('sass'), {
-      id: '@id'
-    }, updatable());
-  }).factory('Page', function($resource) {
-    return $resource(apiPath('pages'), {
-      id: '@id'
-    }, {
-      update: {
-        method: 'PUT'
-      },
-      checkExistance: {
-        method: 'POST',
-        url: apiPath('pages', 'checkExistance')
-      }
-    });
-  });
-
-  apiPath = function(entity, additional) {
-    if (additional == null) {
-      additional = '';
-    }
-    return ("api/" + entity + "/") + (additional ? additional + '/' : '') + ":id";
-  };
-
-  updatable = function() {
-    return {
-      update: {
-        method: 'PUT'
-      }
-    };
-  };
-
-  countable = function() {
-    return {
-      count: {
-        method: 'GET'
-      }
-    };
-  };
 
 }).call(this);
 
@@ -1096,6 +1185,11 @@
     };
     return this;
   });
+
+}).call(this);
+
+(function() {
+
 
 }).call(this);
 

@@ -12,6 +12,9 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
     Route::post('pages/search', 'PagesController@search');
     Route::resource('pages', 'PagesController');
 
+    #pr
+    Route::resource('programms', 'ProgrammsController');
+
     # Translit
     Route::post('translit/to-url', 'TranslitController@toUrl');
 

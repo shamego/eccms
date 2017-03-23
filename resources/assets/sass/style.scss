@@ -4056,3 +4056,30 @@ label {
 select[multiple] {
     height: 34px;
 }
+
+.programm-container {
+    & h2 {
+        margin: 5px 0px;
+        font-size: 12pt;
+        i {
+            font-size: 10pt;
+            margin-left: 2px;
+        }
+    }
+    & .fa {
+        font-size: 10pt;
+        cursor: pointer;
+    }
+    & .root ul {
+        padding-left: 0;
+        li {
+            margin-left: 20px;
+            list-style: none;
+        }
+        @at-root .root > ul {
+            > li {
+                margin-left: 0px!important;
+            }
+        }
+    }
+}
