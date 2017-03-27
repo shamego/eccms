@@ -8,23 +8,17 @@ angular.module 'Egecms'
         levelstring: '='
         delete: '&delete'
     controller: ($timeout, $element, $scope) ->
-        $scope.focusForm = (type) ->
-            $timeout ->
-                $element.find("input.#{type}-item").last().focus()
-
-        $scope.edit = ->
-            $scope.is_editing = true
-            $scope.focusForm 'edit'
-
-        $scope.save = (event) ->
-            if $scope.item.title.length and event?.keyCode is 13
-                $scope.is_editing = false
-            if event?.keyCode is 27
-                $scope.is_editing = false
+        $scope.onEdit = (item, event) ->
+            value = $(event.target).text().trim()
+            if value
+                $scope.item.title = value
+            else
+                $(event.target).text $scope.item.title
 
         $scope.addChild = ->
             $scope.is_adding = true
-            $scope.focusForm 'add'
+            $timeout ->
+                $element.find("input").last().focus()
 
         $scope.createChild = (event) ->
             if $scope.new_item.title and event?.keyCode is 13
@@ -34,12 +28,12 @@ angular.module 'Egecms'
                     resetNewItem()
 
             if event?.keyCode is 27
-                $scope.is_adding = false
+                $(event.target).blur()
 
         $scope.deleteChild = (child) ->
             $scope.item.content = _.without $scope.item.content, child
 
-        $scope.focusOut = ->
+        $scope.blur = ->
             $scope.is_adding = false
             $scope.is_editing = false
 

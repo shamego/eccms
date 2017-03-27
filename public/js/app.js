@@ -449,6 +449,29 @@
 }).call(this);
 
 (function() {
+  angular.module('Egecms').directive('editable', function() {
+    return {
+      restrict: 'A',
+      link: function($scope, $element, $attrs) {
+        return $element.on('click', function(event) {
+          return $element.attr('contenteditable', 'true').focus();
+        }).on('keydown', function(event) {
+          var ref;
+          if ((ref = event.keyCode) === 13 || ref === 27) {
+            event.preventDefault();
+            return $element.blur();
+          }
+        }).on('blur', function(event) {
+          $scope.onEdit($element.attr('editable'), event);
+          return $element.removeAttr('contenteditable');
+        });
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
 
 
 }).call(this);
@@ -581,26 +604,20 @@
       },
       controller: function($timeout, $element, $scope) {
         var resetNewItem;
-        $scope.focusForm = function(type) {
-          return $timeout(function() {
-            return $element.find("input." + type + "-item").last().focus();
-          });
-        };
-        $scope.edit = function() {
-          $scope.is_editing = true;
-          return $scope.focusForm('edit');
-        };
-        $scope.save = function(event) {
-          if ($scope.item.title.length && (event != null ? event.keyCode : void 0) === 13) {
-            $scope.is_editing = false;
-          }
-          if ((event != null ? event.keyCode : void 0) === 27) {
-            return $scope.is_editing = false;
+        $scope.onEdit = function(item, event) {
+          var value;
+          value = $(event.target).text().trim();
+          if (value) {
+            return $scope.item.title = value;
+          } else {
+            return $(event.target).text($scope.item.title);
           }
         };
         $scope.addChild = function() {
           $scope.is_adding = true;
-          return $scope.focusForm('add');
+          return $timeout(function() {
+            return $element.find("input").last().focus();
+          });
         };
         $scope.createChild = function(event) {
           if ($scope.new_item.title && (event != null ? event.keyCode : void 0) === 13) {
@@ -613,13 +630,13 @@
             }
           }
           if ((event != null ? event.keyCode : void 0) === 27) {
-            return $scope.is_adding = false;
+            return $(event.target).blur();
           }
         };
         $scope.deleteChild = function(child) {
           return $scope.item.content = _.without($scope.item.content, child);
         };
-        $scope.focusOut = function() {
+        $scope.blur = function() {
           $scope.is_adding = false;
           return $scope.is_editing = false;
         };
