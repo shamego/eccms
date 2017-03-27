@@ -5,6 +5,7 @@ angular.module 'Egecms'
     scope:
         item:   '='
         level:  '=?'
+        levelstring: '='
         delete: '&delete'
     controller: ($timeout, $element, $scope) ->
         $scope.focusForm = (type) ->
@@ -41,6 +42,10 @@ angular.module 'Egecms'
         $scope.focusOut = ->
             $scope.is_adding = false
             $scope.is_editing = false
+
+        $scope.getChildLevelString = (child_index) ->
+            str = if $scope.levelstring then $scope.levelstring else ''
+            str + (child_index + 1) + '.'
 
         resetNewItem = ->
             $scope.new_item = {title: '', content: []}

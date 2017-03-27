@@ -1,6 +1,6 @@
 <h2 ng-if="level > 1" ng-mouseover="show_controls = true" ng-mouseleave="show_controls = false">
     <span ng-show="!is_editing">
-        @{{ item.title }}
+        @{{ levelstring }} @{{ item.title }}
         <span ng-show="show_controls">
             <i ng-click="edit()" class="fa fa-pencil" aria-hidden="true"></i>
             <i ng-click="delete()" class="fa fa-minus" aria-hidden="true"></i>
@@ -17,7 +17,7 @@
 
 <ul>
     <li ng-repeat="child in item.content">
-        <programm-item item="child" level="level ? level + 1 : 0" delete="deleteChild(child)"></programm-item>
+        <programm-item item="child" level="level ? level + 1 : 0" levelstring="getChildLevelString($index)" delete="deleteChild(child)"></programm-item>
     </li>
     <li>
         <span ng-show="level == 1 && !is_adding">
